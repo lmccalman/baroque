@@ -1,0 +1,15 @@
+[project]
+name = "baroque"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ipython>=9.0.2",
+    "markdown>=3.7",
+    "markdown2>=2.5.3",
+    "openai>=1.70.0",
+    "pandoc>=2.4",
+    "pypdf[full]>=5.4.0",
+    "weasyprint>=65.0",
+]
