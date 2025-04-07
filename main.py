@@ -7,10 +7,13 @@ from PIL import Image
 import io
 from openai import OpenAI
 import base64
-client = OpenAI()
 
-OCR_PROMPT = "The image is a scan of a page from a handwritten journal from approximately 1776. The text is in French or English of the period. Extract the text from the image and return it as a markdown formatted string. If there is no text, return an empty string. Do not enclose the text in a markdown environment or triple quotes, just provide the minimal markdown required to retain the formatting."
-TRANSLATION_PROMPT = "You are working as an acamedic historian. Translate the following markdown formatted text from 18th century French to English, preserving the original meaning and intent. Retain the markdown formatting. If there is no text, return an empty string."
+
+# Initialize OpenAI client with API key from environment variable
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+
+OCR_PROMPT = "The image is a scan of a page from a handwritten journal from approximately 1776. The text is in French or English of the period. Extract the text from the image and return it as a plain text string with whitespace intact. If you can't understand a section just say <text unclear> and never try to add special symbols or syntax. If there is no text, return an empty string."
+TRANSLATION_PROMPT = "You are working as an academic historian. Translate the following text from 18th century French to English, preserving the original meaning and intent. Output as plain text and retainthe original whitespace. If there is no text, return an empty string."
 
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
@@ -67,6 +70,17 @@ def find_pdf_files() -> OrderedDict[str, Path]:
 
     return OrderedDict(sorted(pdf_files.items(), key=lambda x: natural_sort_key(x[0])))
 
+def clean_text(text: str) -> str:
+    """
+    Remove triple backticks from the start and end of a string.
+    Also remove any leading/trailing whitespace.
+    """
+    text = text.strip()
+    if text.startswith('```'):
+        text = text[3:]
+    if text.endswith('```'):
+        text = text[:-3]
+    return text.strip()
 
 def extract_images(pdf_path: Path, scale: float = 1.0, override_text: bool = False):
     """
@@ -89,13 +103,10 @@ def extract_images(pdf_path: Path, scale: float = 1.0, override_text: bool = Fal
 
     reader = PdfReader(pdf_path)
     for page_num, page in enumerate(reader.pages, start=1):
-        if page_num > 5:
-            break
         for img_num, image_file_object in enumerate(page.images, start=1):
             # Create filename: page_number-image_number.jpg
             img_filename = f"page{page_num:04d}-image{img_num}.jpg"
             img_path = output_dir / img_filename
-
 
             # Load image data into PIL Image
             img = Image.open(io.BytesIO(image_file_object.data))
@@ -116,7 +127,7 @@ def extract_images(pdf_path: Path, scale: float = 1.0, override_text: bool = Fal
             text_path = img_path.with_stem(img_path.stem + "_french").with_suffix(".md")
             if override_text or not text_path.exists():
                 print(f"Extracting text from {img_path}")
-                text = extract_text(img_path)
+                text = clean_text(extract_text(img_path))
                 with open(text_path, "w") as f:
                     f.write(text)
             else:
@@ -127,13 +138,14 @@ def extract_images(pdf_path: Path, scale: float = 1.0, override_text: bool = Fal
             translated_text_path = img_path.with_stem(img_path.stem + "_english").with_suffix(".md")
             if not translated_text_path.exists():
                 print(f"Translating text from {text_path} to {translated_text_path}")
-                translated_text = translate_text(text)
+                translated_text = clean_text(translate_text(text))
                 with open(translated_text_path, "w") as f:
                     f.write(translated_text)
 
             html_input.append((img_path, text_path, translated_text_path))
 
-    create_html_document(html_input, output_dir / f"{pdf_path.stem}.html")
+    #create_html_document(html_input, output_dir / f"{pdf_path.stem}.html")
+    create_latex_document(html_input, output_dir / f"{pdf_path.stem}.tex")
 
 def create_html_document(pages: list[tuple[Path, Path, Path]], output_path: Path):
     """
@@ -238,9 +250,9 @@ def create_html_document(pages: list[tuple[Path, Path, Path]], output_path: Path
     for image_path, french_md_path, english_md_path in pages:
         # Read markdown files
         with open(french_md_path, 'r', encoding='utf-8') as f:
-            french_text = markdown.convert(f.read())
+            french_text = clean_text(markdown.convert(f.read()))
         with open(english_md_path, 'r', encoding='utf-8') as f:
-            english_text = markdown.convert(f.read())
+            english_text = clean_text(markdown.convert(f.read()))
 
         # Create relative paths for images
         image_rel_path = os.path.relpath(image_path, output_path.parent)
@@ -283,6 +295,127 @@ def create_html_document(pages: list[tuple[Path, Path, Path]], output_path: Path
     pdf_path = output_path.with_suffix('.pdf')
     HTML(string=final_html).write_pdf(pdf_path)
     print(f"Created PDF document: {pdf_path}")
+
+def create_latex_document(pages: list[tuple[Path, Path, Path]], output_path: Path):
+    """
+    Create a LaTeX document with multiple pages, each containing three columns:
+    image, French text, and English text.
+
+    Args:
+        pages: List of 3-tuples containing (image_path, french_md_path, english_md_path)
+        output_path: Path where the LaTeX file should be saved
+    """
+    import subprocess
+    import os
+
+    # Ensure output directory exists
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    print(f"Output directory: {output_path.parent.absolute()}")
+    print(f"Output file: {output_path.absolute()}")
+
+    # LaTeX template
+    latex_template = r"""\documentclass{{article}}
+\usepackage{{fontspec}}
+\usepackage{{graphicx}}
+\usepackage{{multicol}}
+\usepackage{{geometry}}
+\usepackage[french,english]{{babel}}
+\usepackage{{microtype}}
+\usepackage{{xcolor}}
+\usepackage{{framed}}
+\usepackage{{lscape}}
+\usepackage{{hyperref}}
+\usepackage{{adjustbox}}
+\usepackage{{parskip}}
+
+\geometry{{a4paper, landscape, margin=1cm}}
+\setmainfont{{Baskervald ADF Std}}
+
+\setlength{{\columnseprule}}{{0.4pt}}
+\setlength{{\columnsep}}{{2em}}
+
+% Consistent paragraph spacing
+\setlength{{\parskip}}{{0.8em}}
+\setlength{{\parindent}}{{0pt}}
+
+% Consistent list spacing
+\setlength{{\itemsep}}{{0.4em}}
+\setlength{{\parsep}}{{0.4em}}
+
+\begin{{document}}
+{content}
+\end{{document}}
+"""
+
+    # Process each page
+    content = []
+    for image_path, french_md_path, english_md_path in pages:
+        # Read markdown files directly
+        with open(french_md_path, 'r', encoding='utf-8') as f:
+            french_text = f.read()
+
+        with open(english_md_path, 'r', encoding='utf-8') as f:
+            english_text = f.read()
+
+        # Create relative paths for images
+        image_rel_path = os.path.relpath(image_path, output_path.parent)
+        print(f"Image path: {image_path.absolute()}")
+        print(f"Relative image path: {image_rel_path}")
+
+        # Create page LaTeX
+        page_tex = f"""
+\\begin{{multicols}}{{3}}
+\\begin{{adjustbox}}{{max width=\\columnwidth, max height=\\textheight, keepaspectratio, center}}
+\\includegraphics{{{image_rel_path}}}
+\\end{{adjustbox}}
+
+\\columnbreak
+
+\\selectlanguage{{french}}
+\\raggedright
+\\small
+
+{french_text}
+
+\\columnbreak
+
+\\selectlanguage{{english}}
+\\raggedright
+\\small
+{english_text}
+\\end{{multicols}}
+\\newpage
+"""
+        content.append(page_tex)
+
+    # Combine all content
+    final_tex = latex_template.format(content='\n'.join(content))
+
+    # Write the LaTeX file
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(final_tex)
+
+    print(f"Created LaTeX document with {len(pages)} pages: {output_path}")
+
+    # Compile the LaTeX document
+    try:
+        # Change to the output directory
+        os.chdir(output_path.parent)
+        print(f"Current working directory: {os.getcwd()}")
+
+        # First run to generate the PDF
+        subprocess.run(['lualatex', '-interaction=nonstopmode', output_path.name],
+                      check=True)
+        # Second run to resolve references
+        subprocess.run(['lualatex', '-interaction=nonstopmode', output_path.name],
+                      check=True)
+        print(f"Compiled LaTeX document to PDF: {output_path.with_suffix('.pdf')}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error compiling LaTeX document: {e}")
+        print("The .tex file was created but compilation failed. You can try compiling it manually.")
+    finally:
+        # Change back to the original directory
+        os.chdir(Path.cwd())
 
 def main():
     pdf_files = find_pdf_files()
