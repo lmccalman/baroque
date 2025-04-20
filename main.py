@@ -146,7 +146,7 @@ def collate(notebook_name: str, model: str, ocr_model: str, trans_model: str):
     # zip the files together
     latex_pages = list(zip(image_files, french_files, english_files))
     output_dir = Path.cwd() / "output" / notebook_name
-    create_latex_document(latex_pages, output_dir / f"{notebook_name}.tex")
+    create_latex_document(latex_pages, output_dir / f"{notebook_name}.tex", notebook_name, model)
 
 if __name__ == "__main__":
     main()
