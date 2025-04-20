@@ -12,8 +12,6 @@ def create_latex_document(pages: list[tuple[Path, Path, Path]], output_path: Pat
         output_path: Path where the LaTeX file should be saved
     """
     # Ensure output directory exists
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    print(f"Output directory: {output_path.parent.absolute()}")
     print(f"Output file: {output_path.absolute()}")
 
     # LaTeX template
@@ -53,7 +51,7 @@ def create_latex_document(pages: list[tuple[Path, Path, Path]], output_path: Pat
     # Process each page
     content = []
     for image_path, french_md_path, english_md_path in pages:
-        # Read markdown files directly
+        # Read text files directly
         with open(french_md_path, 'r', encoding='utf-8') as f:
             french_text = f.read()
         with open(english_md_path, 'r', encoding='utf-8') as f:
@@ -110,10 +108,11 @@ def create_latex_document(pages: list[tuple[Path, Path, Path]], output_path: Pat
         # Second run to resolve references
         subprocess.run(['lualatex', '-interaction=nonstopmode', output_path.name],
                       check=True)
-        print(f"Compiled LaTeX document to PDF: {output_path.with_suffix('.pdf')}")
+        #print(f"Compiled LaTeX document to PDF: {output_path.with_suffix('.pdf')}")
     except subprocess.CalledProcessError as e:
-        print(f"Error compiling LaTeX document: {e}")
-        print("The .tex file was created but compilation failed. You can try compiling it manually.")
+        pass
+        #print(f"Error compiling LaTeX document: {e}")
+        #print("The .tex file was created but compilation failed. You can try compiling it manually.")
     finally:
         # Change back to the original directory
         os.chdir(Path.cwd())
