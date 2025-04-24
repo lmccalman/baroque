@@ -91,6 +91,65 @@ Convert the given plain text to LaTeX format following these instructions.
 Here is the plain text to convert:
 """
 
+ANALYSIS_PROMPT1 = """
+You are tasked with analyzing and summarizing an 18th century French journal for an expert academic historian audience. The journal text is provided below:
+<journal>
+"""
+
+
+ANALYSIS_PROMPT2 = """
+</journal>
+
+Your task is to create a structured summary of this journal, focusing on key historical elements. The output should contain the following sections:
+
+1. Summary: A 500 word summary of the contents of the journal
+2. People:  A list of names of people featuring in the journal, with a 1 sentence description of who they are
+3. Places: A list of places occurring in the journal, with a 1 sentence description of why they are significant
+4. Chronology:  A list of major events and their dates or approximate dates, including who was involved.
+
+To complete this task, follow these instructions:
+
+1. Summary:
+   - Carefully read and analyze the entire journal text.
+   - Identify the main themes, events, and topics discussed in the journal.
+   - Write a concise 500-word summary that captures the essence of the journal's contents.
+   - Focus on historically significant information, cultural context, and the author's perspective.
+   - Ensure the summary is coherent and provides a clear overview of the journal's content.
+
+2. People:
+   - Compile a list of all notable individuals mentioned in the journal.
+   - For each person, provide a one-sentence description that explains their role or significance.
+   - Include their full names (if available) and any titles or positions they held.
+   - Prioritize individuals who play a significant role in the journal's narrative or historical context.
+
+3. Places:
+   - Create a list of all significant locations mentioned in the journal.
+   - For each place, write a one-sentence description explaining its importance in the context of the journal.
+   - Include both specific locations (e.g., cities, buildings) and broader geographical areas if relevant.
+   - Highlight any historical significance of these places during the 18th century.
+
+4. Chronology:
+   - Identify major events mentioned in the journal.
+   - List these events in chronological order.
+   - Include specific dates when available, or approximate dates if exact dates are not provided.
+   - Ensure each event is significant and relevant to the historical context.
+
+Your final output should only include the structured summary. The output should be enclosed in <output> tags and be in LaTeX markup suitable for inclusion in a larger document. Headings should use the \section markup and lists should use the description environment to retain proper formatting. Do not include document tags, package imports or other frontmatter. For example:
+
+<output>
+\section{Summary}
+Your summary
+\Section{People}
+\begin{description}
+\item[Person's name] Person's description \\
+\end{description}
+</output>
+
+Remember Ensure that all information provided is directly derived from the journal text and relevant to an expert academic historian's research.
+"""
+
+
+
 def _encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
@@ -269,3 +328,40 @@ def _claude_format_text(text: str, client):
     log_txt = response.content[0].text
     result = _extract_output(response.content[0].text)
     return result, log_txt
+
+
+def _claude_analyse_text(full_text:str, client):
+    response = client.messages.create(
+    model="claude-3-7-sonnet-20250219",
+    max_tokens=20000,
+    temperature=1,
+    system="You are an expert academic historian specialising in 18th century Europe.",
+    thinking={
+        "type": "enabled",
+        "budget_tokens": 16000
+    },
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": ANALYSIS_PROMPT1 + full_text + ANALYSIS_PROMPT2,
+                }
+            ]
+        }
+    ]
+    )
+    log_txt = "THINKING\n\n" + response.content[0].thinking + "\n\nRESPONSE\n\n" + response.content[1].text
+    result = _extract_output(response.content[1].text)
+    return result, log_txt
+
+def analyse_text(full_text:str, model:str):
+    if model == "openai":
+        client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        return _openai_analyse_text(full_text, client)
+    elif model == "claude":
+        client = Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
+        return _claude_analyse_text(full_text, client)
+    else:
+        raise ValueError(f"Invalid model: {model}")

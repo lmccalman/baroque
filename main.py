@@ -1,9 +1,10 @@
 import fnmatch
 from pathlib import Path
+from pydoc import plain
 from pypdf import PdfReader
 import click
 from latex import create_latex_document
-from process import extract_text, translate_text, format_text
+from process import extract_text, translate_text, format_text, analyse_text
 from pdf import notebook_images, find_pdf_files
 from image import save_page_image
 
@@ -130,11 +131,13 @@ def collate(notebook_name: str, model: str, ocr_model: str, trans_model: str):
     image_files = sorted(list(image_dir.glob("*.jpg")), key=lambda x: int(x.stem.split('_')[1]))
     french_files = sorted(list(french_dir.glob("*.tex")), key=lambda x: int(x.stem.split('_')[1]))
     english_files = sorted(list(english_dir.glob("*.tex")), key=lambda x: int(x.stem.split('_')[1]))
+    plain_files = sorted(list(english_dir.glob("*.txt")), key=lambda x: int(x.stem.split('_')[1]))
 
     image_keys = [int(f.stem.split('_')[1]) for f in image_files]
     french_keys = [int(f.stem.split('_')[1]) for f in french_files]
     english_keys = [int(f.stem.split('_')[1]) for f in english_files]
-    pages = set(image_keys).intersection(french_keys).intersection(english_keys)
+    plain_keys = [int(f.stem.split('_')[1]) for f in plain_files]
+    pages = set(image_keys).intersection(french_keys).intersection(english_keys).intersection(plain_keys)
     assert set(range(1, len(pages) + 1)) == set(pages), "Page numbers are not contiguous"
     print(f"Found {len(pages)} pages")
 
@@ -142,11 +145,19 @@ def collate(notebook_name: str, model: str, ocr_model: str, trans_model: str):
     image_files = [f for f in image_files if int(f.stem.split('_')[1]) in pages]
     french_files = [f for f in french_files if int(f.stem.split('_')[1]) in pages]
     english_files = [f for f in english_files if int(f.stem.split('_')[1]) in pages]
+    plain_files = [f for f in plain_files if int(f.stem.split('_')[1]) in pages]
+
+    # create the full summary
+    full_text = "\n\n".join([f.read_text() for f in plain_files])
+    summary, summary_log = analyse_text(full_text, model)
 
     # zip the files together
     latex_pages = list(zip(image_files, french_files, english_files))
     output_dir = Path.cwd() / "output" / notebook_name
-    create_latex_document(latex_pages, output_dir / f"{notebook_name}.tex", notebook_name, model)
+    summary_log_file = output_dir / f"summary_{notebook_name}.log"
+    with open(summary_log_file, 'w') as f:
+        f.write(summary_log)
+    create_latex_document(latex_pages, output_dir / f"{notebook_name}.tex", notebook_name, model, summary)
 
 if __name__ == "__main__":
     main()
