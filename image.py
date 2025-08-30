@@ -12,9 +12,12 @@ def save_page_image(image_file_object, page_num: int, output_dir: Path, scale: f
 
     original_size = (img.width, img.height)
     # Apply scaling if needed
+    print(f"Scale: {scale}")
+    print(f"dimenions: {img.width}, {img.height}")
     if scale < 1.0:
         new_size = (int(img.width * scale), int(img.height * scale))
-        img = img.resize(new_size, Image.Resampling.LANCZOS)
+        if new_size[0] > 1 and new_size[1] > 1:
+            img = img.resize(new_size, Image.Resampling.LANCZOS)
 
     # convert to greyscale
     img = img.convert("L")

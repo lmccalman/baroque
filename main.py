@@ -59,6 +59,7 @@ def ocr(notebook_name: str, override: bool, npages: int, model: str):
         latex_log_path = output_dir / f"{image_path.stem}_french.tex.log"
         if not text_path.exists() or override:
             text, text_log = extract_text(image_path, model=model)
+            print(text_log)
             latex, latex_log = format_text(text, model=model)
             with open(text_path, "w") as f:
                 f.write(text)
