@@ -1,8 +1,9 @@
-from PIL import Image
-import io
-from pathlib import Path
+import config as cfg
 
-def save_page_image(image_file_object, page_num: int, output_dir: Path, scale: float = 1.0):
+
+def save_page_image(
+    image_file_object, page_num: int, output_dir: Path, scale: float = 1.0
+):
     # Create filename: page_number.jpg
     img_filename = f"page_{page_num:04d}.jpg"
     img_path = output_dir / img_filename
@@ -24,5 +25,11 @@ def save_page_image(image_file_object, page_num: int, output_dir: Path, scale: f
 
     # Save the image
     img.save(img_path, "JPEG", quality=95)
-    print(f"Saved image: {img_path.stem} (scaled: {original_size[0]}x{original_size[1]} -> {img.width}x{img.height})")
+    print(
+        f"Saved image: {img_path.stem} (scaled: {original_size[0]}x{original_size[1]} -> {img.width}x{img.height})"
+    )
 
+
+def _blob_to_image(blob_data: bytes) -> Image.Image:
+    """Convert database BLOB back to PIL Image"""
+    return Image.open(io.BytesIO(blob_data))

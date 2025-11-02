@@ -1,0 +1,27 @@
+Arkansas      San Filipe          74
+              Sierena             74
+              Alicante            74
+              Angel de la Guarda  74
+              Fame                74
+              San Francisco de Paula 74
+              San Fulgencio       74
+Ferrol        San Leonardo        64
+Cadiz         San Ramon           64
+              Castilla            80
+              Reloco              80
+
+              12 Frigates         64
+              8 Sloops of War     34
+
+Account of Ships armed a este command
+              2 Ships of the line
+              12 Frigates
+              8 Corvettes
+              9 Sloops
+              7 Cutters
+
+State of the Ships in the Arsenal at Ferrol 1805
+1 of   112   manned, not ready to sail
+"      84    half manned to Cadiz
+"      74
+"      64

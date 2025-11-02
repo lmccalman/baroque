@@ -1,0 +1,36 @@
+(4)
+
+" ces of Clerical Counselors, thirty-two Offices of
+" Lay Counselors, one Office of Attorney General,
+" two Offices of Advocates General & two Offices
+" of Deputies of Our Attorney General.
+" It is then said that the Parlement shall be composed
+" of a Grand Chamber, a Criminal Tournelle
+" & a Chamber of Inquiries.
+" The Counselors who shall be received in said Court,
+" shall be at least 25 years of age & shall have followed
+" exactly the Bar, in the capacity of Advocates, for
+" five years, or filled during the same span
+" of time some other Office of Judicature.
+" The cognizance of causes of Privileged persons who
+" have right of committimus shall belong to the Bail-
+" liage of Besançon, save the appeal to the Parlement.
+" The Officers of said Parlement may not take
+" from Parties, any remuneration, under the title
+" of spices, vacations, or other denominations what-
+" soever, & to take the place of the honors that
+" were paid before said Edict, His Majesty grants
+" to each Officer of this Court, the wages here-
+" after, namely:
+
+To M. the First President . . . . 12000 liv.
+To each of the Presidents . . . . . 6000
+To each of the Counselors-Presidents . 4000
+To each of the Counselors . . . . . 2400
+To each of the Advocates General . . 6000
+To M. the Attorney General . . . . 6000
+To each of the Deputies . . . . . 1000
+
+And beyond the above wages, the Dean of Lay Coun-
+selors shall enjoy further a pension of 1500
+livres, & that of the Clerical Counselors of 1000 liv.

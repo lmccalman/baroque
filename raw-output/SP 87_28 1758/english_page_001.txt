@@ -1,0 +1,6 @@
+tags
+
+However, I notice that no actual French text has been provided in this message. The user has given me instructions but no text to translate. I should return an empty output as instructed for when "the input is empty."
+</thinking>
+
+<output>

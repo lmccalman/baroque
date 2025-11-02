@@ -1,0 +1,8 @@
+tags
+
+However, I notice that no actual text has been provided for translation. The user has given me instructions but no sample text to work with.
+
+I should wait for the actual text to translate. Since no text was provided, I should return an empty output as instructed.
+</thinking>
+
+<output>

@@ -1,0 +1,35 @@
+Noms et prénoms     Particularités     Observations
+
+Prennes.
+    Morsch
+    Geneviève .... 500 36
+    Thérèse ..... 500 36
+
+    Rochefort
+    Brigitte ..... 5à 20
+    Cécile ...... 5à 20
+    Clementine .. 5à 20
+    Elisabeth .... 5à 20
+    Françoise .... 5à 20
+    Joséphine .... 500 20
+    Julie ....... 500 20
+    Louise ...... 500 20
+    Françoise .... 500 20
+
+
+Renault.
+    Rochefort
+    à Pont. Pétrus .. 52 10
+    Villard Baptiste . 54 10
+    Villard Billeau . 104 10
+    Philimon ..... 90 10
+    Villard ...... 90 10
+    Corinne ..... 140 10
+
+
+
+à Jeuné dimere
+
+à Batteau à plates
+à Chateau La Port
+à Gardes

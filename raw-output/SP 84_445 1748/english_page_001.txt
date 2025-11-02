@@ -1,0 +1,8 @@
+tags
+
+However, I notice that no actual text has been provided to translate. The user has set up the task but hasn't given me the French text to work with.
+
+I should return an empty output as instructed for when input is empty.
+</thinking>
+
+<output>

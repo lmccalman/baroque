@@ -1,0 +1,34 @@
+List of Regiments
+destined to enter the Campaign.
+
+Infantry.                                        Cavalry.
+
+La Couronne            Berris                   Cuirassiers
+Flandre                Agenois                  Mestre de Camp.
+Auvergne               La Perche                Royal Normandie
+Conilhac               Royal deux Ponts         Royal Pié
+Brie                   Auxerrois                Curabiniers.
+Bécobreck              Alsace
+Savoy Carrignan        Salis Bernstein          Royal Allemand
+Royal Corse            Frou                     Lorraine
+La Marche              Colonel general          Meujeillon
+Viennois               Bouillon                 Avois
+Navarre                Salis Salis              Roy
+Boulonnois             Bourgogne                Bourgogne
+Chartres               Barrois                  La Reine
+Bourbon                Hainault                 Royale
+Touraine               Vexinjuc                 Luxembourg
+Royal Roussillon       Klemont                  Royal Rouillier
+Bellin                 Bourbonnois              La Marche
+Royal Comtois          Baurn                    Les Evesches
+Nivernois              Busaffron
+Isles Armade           Dauphin                  Huefords.
+Lorib                  Regiment du Roi          Colonel General
+Bourgogne              Dillon                   Berchini
+Lyonnois               Beauvoisis               Chamborant
+Limousin               Viguis                   Ottewaley
+Austricis              Pelement                 Conflans.
+
+                                                Dragoons.
+
+                       27

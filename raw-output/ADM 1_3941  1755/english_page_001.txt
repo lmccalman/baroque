@@ -1,0 +1,8 @@
+tags
+
+However, I notice that no actual text has been provided for me to translate. The user has given me instructions but no source text to work with.
+
+Since the input is empty (no French text provided), according to the instructions, I should return an empty output.
+</thinking>
+
+<output>

@@ -1,0 +1,5 @@
+tags
+
+However, I notice that no actual text has been provided for translation. The user has given me the instructions but hasn't included the French text to translate.
+
+I should return an empty output as instructed: "If the input is empty, return <output>

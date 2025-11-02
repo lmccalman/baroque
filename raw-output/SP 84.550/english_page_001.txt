@@ -1,0 +1,8 @@
+tags
+
+However, I notice that no actual text has been provided for me to translate. The user has given me the instructions but not the source text itself. 
+
+Since there is no input text to translate, according to the instructions, I should return an empty output tag.
+</thinking>
+
+<output>
